@@ -4,7 +4,7 @@ import './Settings.css';
 export class Settings extends React.Component {
   onChangeInput = (e) => {
     const { value } = e.target;
-    this.props.onChangeBoardSize(+value);
+    this.props.onChangeBoardSize(Math.max(3, +value));
   };
 
   render() {
@@ -14,6 +14,7 @@ export class Settings extends React.Component {
         <input
           className="settins__input"
           type="number"
+          disabled={this.props.isDisabled}
           onChange={this.onChangeInput}
         />
       </label>

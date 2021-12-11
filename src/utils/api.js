@@ -5,6 +5,7 @@ export const fakeApi = {
     getField() {
         return new Promise(
             res => {
+                console.log('fakeApi');
                 const fieldString = localStorage.getItem('field');
                 const field = fieldString && JSON.parse(fieldString);
                 const player = localStorage.getItem('player');
@@ -17,6 +18,8 @@ export const fakeApi = {
     saveField({ field, player }, shouldCheckResult) {
         return new Promise(
             res => {
+                // console.log('field', field, 'player', player);
+                // console.log('shouldCheckResult', shouldCheckResult);
                 localStorage.setItem('field', JSON.stringify(field));
                 localStorage.setItem('player', player);
                 let winner;
