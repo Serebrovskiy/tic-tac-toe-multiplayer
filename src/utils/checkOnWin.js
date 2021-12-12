@@ -1,12 +1,18 @@
 export const checkHorizontalRow = (newBoard, rowIndex, cellIndex) => {
   let rowHorizontal = 0;
   let winner;
+  let winninCells = [];
 
-  newBoard[rowIndex].forEach(cell => {
+  newBoard[rowIndex].forEach((cell, index) => {
     if (cell === newBoard[rowIndex][cellIndex]) {
       rowHorizontal++;
+      winninCells.push({
+        rowIndex: rowIndex,
+        cellIndex: index
+      });
       if (rowHorizontal === 5) {
         //  console.log(`${cell} is winner!!!`);
+        console.log('winninCells', winninCells);
         winner = cell;
       }
     } else {
@@ -72,7 +78,6 @@ export const checkDiagonalRow = (newBoard, rowIndex, cellIndex) => {
     // console.log('rowDiagonal', rowDiagonal);
   }
 
-
   if (newBoard.length > (rowIndex + cellIndex)) {
     finishCount2 = (rowIndex + cellIndex) + 1;
     startRow2 = 0;
@@ -82,9 +87,7 @@ export const checkDiagonalRow = (newBoard, rowIndex, cellIndex) => {
     startRow2 = ((rowIndex + cellIndex) - newBoard.length) + 1;
     startCell2 = newBoard.length - 1;
   }
-
   //console.log('finishCount2', finishCount2);
-
   for (let i = 0; i < finishCount2; i++) {
     // console.log(`point newBoard[${rowIndex}][${cellIndex}]`);
     // console.log(`newBoard[${startRow2 + i}][${startCell2 - i}]`);
@@ -104,5 +107,4 @@ export const checkDiagonalRow = (newBoard, rowIndex, cellIndex) => {
   }
 
   return winner;
-
 }

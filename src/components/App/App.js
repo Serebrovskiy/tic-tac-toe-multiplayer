@@ -3,15 +3,9 @@ import { Settings } from '../Settings/Settings';
 import { Row } from '../Row/Row';
 import { range } from '../../utils/range';
 import { fakeApi } from '../../utils/api';
+import { getOtherPlayer } from '../../utils/getOtherPlayer';
 import { checkHorizontalRow, checkVerticalRow, checkDiagonalRow } from '../../utils/checkOnWin';
 import './App.css';
-
-const getOtherPlayer = currentPlayer => {
-  if (currentPlayer === undefined) {
-    return;
-  }
-  return currentPlayer === 'X' ? 'O' : 'X'
-}
 
 export function App() {
   const [board, setBoard] = useState([
@@ -20,6 +14,7 @@ export function App() {
     [null, null, null]
   ]);
   const [currentPlayer, setCurrentPlayer] = useState('X');
+  const [winner, setWinner] = useState('');
 
   useEffect(() => {
     fakeApi.getField().then(
@@ -47,24 +42,18 @@ export function App() {
     setBoard(newBoard);
     const newPlayer = getOtherPlayer(currentPlayer);
 
-    let winner;
-
     //проверяем горизонтыльный ряд на победу 
     if (checkHorizontalRow(newBoard, rowIndex, cellIndex)) {
-      winner = checkHorizontalRow(newBoard, rowIndex, cellIndex);
+      setWinner(checkHorizontalRow(newBoard, rowIndex, cellIndex));
     }
     //проверяем вертикальный ряд на победу
     if (checkVerticalRow(newBoard, rowIndex, cellIndex)) {
-      winner = checkVerticalRow(newBoard, rowIndex, cellIndex);
+      setWinner(checkVerticalRow(newBoard, rowIndex, cellIndex));
     }
     //проверяем диагональный ряд на победу
     if (checkDiagonalRow(newBoard, rowIndex, cellIndex)) {
-      winner = checkDiagonalRow(newBoard, rowIndex, cellIndex);
+      setWinner(checkDiagonalRow(newBoard, rowIndex, cellIndex));
     }
-    if (winner) {
-      console.log('+++++++++++ Winner  ', winner, '  +++++++++++');
-    }
-
 
     console.log('-------');
 
@@ -82,6 +71,10 @@ export function App() {
     // передаем данные "бэкенду"
     fakeApi.saveField({ field: emptyBoard, player: 'X' })
   }
+
+  useEffect(() => {
+    console.log('+++++++++++ Winner  ', winner, '  +++++++++++');
+  }, [winner]);
 
   return <div className="app">
     {/* tic-tac-toe-multiplayer */}
