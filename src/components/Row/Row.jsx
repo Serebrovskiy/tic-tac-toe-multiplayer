@@ -2,7 +2,8 @@ import React from 'react';
 import { Cell } from '../Cell/Cell';
 import './Row.css';
 
-export function Row({ withTopBorder, value, onMoveMade }) {
+export function Row({ withTopBorder, value, onMoveMade, winner }) {
+  console.log('winner Row', winner);
   return (
     <div className="row">
       {value.map((cellValue, i) => (
@@ -11,6 +12,7 @@ export function Row({ withTopBorder, value, onMoveMade }) {
           withLeftBorder={i === 0}
           withTopBorder={withTopBorder}
           onClick={() => onMoveMade(i)}
+          winner={winner && winner.filter((cell) => cell.cellIndex === i)}
         >
           {cellValue}
         </Cell>
@@ -18,3 +20,5 @@ export function Row({ withTopBorder, value, onMoveMade }) {
     </div>
   );
 }
+// onWinner={() => onWinner(i)}
+//winner={winner && winner.cellIndex === i}

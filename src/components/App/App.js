@@ -14,7 +14,7 @@ export function App() {
     [null, null, null]
   ]);
   const [currentPlayer, setCurrentPlayer] = useState('X');
-  const [winner, setWinner] = useState('');
+  const [winner, setWinner] = useState([]);
 
   useEffect(() => {
     fakeApi.getField().then(
@@ -41,10 +41,11 @@ export function App() {
 
     setBoard(newBoard);
     const newPlayer = getOtherPlayer(currentPlayer);
+    // console.log('checkHorizontalRow', checkHorizontalRow(newBoard, rowIndex, cellIndex));
 
     //проверяем горизонтыльный ряд на победу 
     if (checkHorizontalRow(newBoard, rowIndex, cellIndex)) {
-      setWinner(checkHorizontalRow(newBoard, rowIndex, cellIndex));
+      setWinner([...checkHorizontalRow(newBoard, rowIndex, cellIndex)]);
     }
     //проверяем вертикальный ряд на победу
     if (checkVerticalRow(newBoard, rowIndex, cellIndex)) {
@@ -66,11 +67,13 @@ export function App() {
     const emptyBoard = range(newSize)
       .map(v => range(newSize));
 
-    setBoard(emptyBoard)
+    setBoard(emptyBoard);
+    setWinner([]);
 
     // передаем данные "бэкенду"
     fakeApi.saveField({ field: emptyBoard, player: 'X' })
   }
+
 
   useEffect(() => {
     console.log('+++++++++++ Winner  ', winner, '  +++++++++++');
@@ -88,6 +91,7 @@ export function App() {
             withTopBorder={i === 0}
             value={board[i]}
             onMoveMade={(cellIndex) => onMoveMade(i, cellIndex)}
+            winner={winner && winner.filter((row) => row.rowIndex === i)}
           />
         )
       }
@@ -96,3 +100,5 @@ export function App() {
 }
 
 export default App;
+
+//winner={winner && winner.find((row) => row.rowIndex === i)}

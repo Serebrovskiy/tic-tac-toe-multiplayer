@@ -18,3 +18,7 @@
 .cell:not(.cell_with-left-border) {
   border-left-color: transparent;
 }
+
+.cell-winner {
+  color: red;
+}
