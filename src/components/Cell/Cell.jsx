@@ -9,7 +9,7 @@ export function Cell({
   winner,
   children,
 }) {
-  console.log('winner Cell', winner.length);
+  //console.log('winner Cell', winner.length);
   return (
     <div
       onClick={onClick}

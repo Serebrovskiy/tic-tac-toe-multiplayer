@@ -3,7 +3,7 @@ import { Cell } from '../Cell/Cell';
 import './Row.css';
 
 export function Row({ withTopBorder, value, onMoveMade, winner }) {
-  console.log('winner Row', winner);
+  //console.log('winner Row', winner);
   return (
     <div className="row">
       {value.map((cellValue, i) => (

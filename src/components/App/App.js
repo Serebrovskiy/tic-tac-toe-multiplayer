@@ -1,33 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { Settings } from '../Settings/Settings';
 import { Row } from '../Row/Row';
+import { Popup } from '../Popup/Popup';
 import { range } from '../../utils/range';
+import { boardStart } from '../../utils/board';
 import { fakeApi } from '../../utils/api';
 import { getOtherPlayer } from '../../utils/getOtherPlayer';
 import { checkHorizontalRow, checkVerticalRow, checkDiagonalRow } from '../../utils/checkOnWin';
 import './App.css';
 
 export function App() {
-  const [board, setBoard] = useState([
-    [null, null, null],
-    [null, null, null],
-    [null, null, null]
-  ]);
+
+  const [board, setBoard] = useState(boardStart);
   const [currentPlayer, setCurrentPlayer] = useState('X');
   const [winner, setWinner] = useState([]);
+  const [isOpenPopup, setIsOpenPopup] = useState(false);
 
-  useEffect(() => {
-    fakeApi.getField().then(
-      ({ field, player }) => {
-        if (field) {
-          setBoard(field);
-        }
-        if (player) {
-          setCurrentPlayer(player)
-        }
-      }
-    )
-  }, []);
+
+  const handlePopupOpen = () => {
+    setIsOpenPopup(true);
+  }
+
+  const closePopup = () => {
+    setBoard(boardStart);
+    setIsOpenPopup(false);
+  }
 
   const onMoveMade = (rowIndex, cellIndex) => {
     const isCellEmpty = board[rowIndex][cellIndex] === null;
@@ -74,9 +71,24 @@ export function App() {
     fakeApi.saveField({ field: emptyBoard, player: 'X' })
   }
 
+  useEffect(() => {
+    fakeApi.getField().then(
+      ({ field, player }) => {
+        if (field) {
+          setBoard(field);
+        }
+        if (player) {
+          setCurrentPlayer(player)
+        }
+      }
+    )
+  }, []);
 
   useEffect(() => {
-    console.log('+++++++++++ Winner  ', winner, '  +++++++++++');
+    if (winner.length) {
+      handlePopupOpen();
+      console.log('+++++++++++ Winner  ', winner, '  +++++++++++');
+    }
   }, [winner]);
 
   return <div className="app">
@@ -96,6 +108,10 @@ export function App() {
         )
       }
     </div>
+    <Popup
+      isOpen={isOpenPopup}
+      onClose={closePopup}
+    />
   </div>
 }
 
