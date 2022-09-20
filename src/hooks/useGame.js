@@ -1,29 +1,41 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
 import { range } from '../utils/range';
-import { boardStart } from '../utils/board';
 import { fakeApi } from '../utils/api';
+import { boardStart } from '../utils/board';
 import { getOtherPlayer } from '../utils/getOtherPlayer';
 import { checkHorizontalRow, checkVerticalRow, checkDiagonalRow } from '../utils/checkOnWin';
+import { UPDATE_BOARD, CHANGE_PLAYER, WINNER, POPUP } from "../redux/types"
 
 
 export function useGame() {
 
-  const [board, setBoard] = useState(boardStart);
-  const [currentPlayer, setCurrentPlayer] = useState('X');
-  const [winner, setWinner] = useState([]);
-  const [isOpenPopup, setIsOpenPopup] = useState(false);
-
+  const dispatch = useDispatch();
+  const board = useSelector(store => store.board);
+  const winner = useSelector(store => store.winner);
+  const currentPlayer = useSelector(store => store.player);
+  const isOpenPopup = useSelector(store => store.popup);
 
   const handlePopupOpen = () => {
-    setIsOpenPopup(true);
+    dispatch({
+      type: POPUP,
+      payload: true
+    })
   }
 
   const closePopup = () => {
-    setBoard(boardStart);
-    setIsOpenPopup(false);
+    dispatch({
+      type: UPDATE_BOARD,
+      payload: boardStart
+    })
+    dispatch({
+      type: POPUP,
+      payload: false
+    })
   }
 
   const onMoveMade = (rowIndex, cellIndex) => {
+
     const isCellEmpty = board[rowIndex][cellIndex] === null;
     if (!isCellEmpty) {
       return;
@@ -33,35 +45,60 @@ export function useGame() {
       return i === cellIndex ? currentPlayer : val;
     });
 
-    setBoard(newBoard);
-    const newPlayer = getOtherPlayer(currentPlayer);
-    // console.log('checkHorizontalRow', checkHorizontalRow(newBoard, rowIndex, cellIndex));
+    dispatch({
+      type: UPDATE_BOARD,
+      payload: newBoard
+    })
+
     //проверяем горизонтыльный ряд на победу 
     if (checkHorizontalRow(newBoard, rowIndex, cellIndex)) {
-      setWinner([...checkHorizontalRow(newBoard, rowIndex, cellIndex)]);
+      dispatch({
+        type: WINNER,
+        payload: checkHorizontalRow(newBoard, rowIndex, cellIndex)
+      })
+      return;
     }
     //проверяем вертикальный ряд на победу
     if (checkVerticalRow(newBoard, rowIndex, cellIndex)) {
-      setWinner(checkVerticalRow(newBoard, rowIndex, cellIndex));
+      dispatch({
+        type: WINNER,
+        payload: checkVerticalRow(newBoard, rowIndex, cellIndex)
+      })
+      return;
     }
     //проверяем диагональный ряд на победу
     if (checkDiagonalRow(newBoard, rowIndex, cellIndex)) {
-      setWinner(checkDiagonalRow(newBoard, rowIndex, cellIndex));
+      dispatch({
+        type: WINNER,
+        payload: checkDiagonalRow(newBoard, rowIndex, cellIndex)
+      })
+      return;
     }
 
     console.log('-------');
 
+    const newPlayer = getOtherPlayer(currentPlayer);
+
     // передаем данные "бэкенду"
     fakeApi.saveField({ field: newBoard, player: newPlayer });
-    setCurrentPlayer(newPlayer);
+    dispatch({
+      type: CHANGE_PLAYER,
+      payload: newPlayer
+    })
   }
 
   const onChangeBoardSize = (newSize) => {
     const emptyBoard = range(newSize)
       .map(v => range(newSize));
 
-    setBoard(emptyBoard);
-    setWinner([]);
+    dispatch({
+      type: UPDATE_BOARD,
+      payload: emptyBoard
+    })
+    dispatch({
+      type: WINNER,
+      payload: []
+    })
 
     // передаем данные "бэкенду"
     fakeApi.saveField({ field: emptyBoard, player: 'X' })
@@ -71,10 +108,16 @@ export function useGame() {
     fakeApi.getField().then(
       ({ field, player }) => {
         if (field) {
-          setBoard(field);
+          dispatch({
+            type: UPDATE_BOARD,
+            payload: field
+          })
         }
         if (player) {
-          setCurrentPlayer(player)
+          dispatch({
+            type: CHANGE_PLAYER,
+            payload: player
+          })
         }
       }
     )
@@ -83,9 +126,10 @@ export function useGame() {
   useEffect(() => {
     if (winner.length) {
       handlePopupOpen();
-      console.log('+++++++++++ Winner  ', winner, '  +++++++++++');
+
+      console.log('+++++++++++ Winner  ', currentPlayer, '   ', winner, '  +++++++++++');
     }
   }, [winner]);
 
-  return { board, winner, isOpenPopup, closePopup, onChangeBoardSize, onMoveMade };
+  return { board, winner, isOpenPopup, currentPlayer, closePopup, onChangeBoardSize, onMoveMade };
 }
