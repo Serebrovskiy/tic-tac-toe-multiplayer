@@ -1,0 +1,4 @@
+export const UPDATE_BOARD = 'BOARD/UPDATE_BOARD'
+export const CHANGE_PLAYER = 'PLAYER/CHANGE_PLAYER'
+export const WINNER = 'WINNER/WINNER'
+export const POPUP = 'POPUP/POPUP'

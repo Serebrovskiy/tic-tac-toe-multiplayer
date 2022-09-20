@@ -7,7 +7,8 @@ import { useGame } from '../../hooks/useGame';
 
 export function App() {
 
-  const { board, winner, isOpenPopup, closePopup, onChangeBoardSize, onMoveMade } = useGame();
+  const { board, winner, isOpenPopup, currentPlayer, closePopup, onChangeBoardSize, onMoveMade } = useGame();
+  //console.log('board', board)
 
   return (
     <div className="app">
@@ -28,6 +29,7 @@ export function App() {
       <Popup
         isOpen={isOpenPopup}
         onClose={closePopup}
+        currentPlayer={currentPlayer}
       />
     </div>
   )
